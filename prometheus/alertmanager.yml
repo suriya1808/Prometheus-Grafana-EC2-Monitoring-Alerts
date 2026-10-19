@@ -1,0 +1,23 @@
+# /etc/alertmanager/alertmanager.yml
+# Sends alert emails through Gmail SMTP.
+# The Gmail App Password is NOT stored here. It lives in /etc/alertmanager/gmail_app_password on the server.
+
+global:
+  smtp_smarthost: 'smtp.gmail.com:587'
+  smtp_from: 'suriyasrnvsn@gmail.com'
+  smtp_auth_username: 'suriyasrnvsn@gmail.com'
+  smtp_auth_password_file: '/etc/alertmanager/gmail_app_password'
+  smtp_require_tls: true
+
+route:
+  receiver: 'email'
+  group_by: ['alertname', 'instance']
+  group_wait: 30s        # Wait before sending the first email for a new group of alerts
+  group_interval: 5m     # Wait before sending updates about the same group
+  repeat_interval: 4h    # Re-send the email every 4 hours while the alert is still firing
+
+receivers:
+  - name: 'email'
+    email_configs:
+      - to: 'suriyasrnvsn@gmail.com'
+        send_resolved: true   # Also email when the problem is fixed

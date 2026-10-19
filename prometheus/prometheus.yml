@@ -1,0 +1,46 @@
+# /etc/prometheus/prometheus.yml
+# Prometheus configuration: monitors Prometheus, the server (Node Exporter), Grafana and Alertmanager,
+# and sends alerts to Alertmanager.
+
+global:
+  scrape_interval: 15s       # How often to collect metrics from each target
+  evaluation_interval: 15s   # How often to evaluate alert rules
+
+# Where to send firing alerts
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["localhost:9093"]
+
+# Alert rules (path is relative to this file: /etc/prometheus/alert_rules.yml)
+rule_files:
+  - "alert_rules.yml"
+
+scrape_configs:
+  # 1. Prometheus monitoring itself
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+        labels:
+          app: "prometheus"
+
+  # 2. The EC2 server: CPU, RAM, swap, disk space, disk I/O, network, systemd services
+  - job_name: "node"
+    static_configs:
+      - targets: ["localhost:9100"]
+        labels:
+          app: "node_exporter"
+
+  # 3. Grafana's own metrics (memory, HTTP requests, etc.)
+  - job_name: "grafana"
+    static_configs:
+      - targets: ["localhost:3000"]
+        labels:
+          app: "grafana"
+
+  # 4. Alertmanager's own metrics
+  - job_name: "alertmanager"
+    static_configs:
+      - targets: ["localhost:9093"]
+        labels:
+          app: "alertmanager"

@@ -1,0 +1,17 @@
+[Unit]
+Description=Prometheus Node Exporter
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+ExecStart=/usr/local/bin/node_exporter \
+  --web.listen-address=127.0.0.1:9100 \
+  --collector.systemd \
+  --collector.systemd.unit-include=(prometheus|grafana-server|node_exporter|alertmanager).service
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

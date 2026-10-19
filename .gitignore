@@ -1,0 +1,15 @@
+# Secrets: never commit passwords or keys
+gmail_app_password
+*password*
+*.pem
+*.key
+.env
+
+# Backups created during setup
+*.bak
+
+# Editor / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

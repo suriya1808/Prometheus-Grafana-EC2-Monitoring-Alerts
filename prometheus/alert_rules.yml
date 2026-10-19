@@ -1,0 +1,25 @@
+# /etc/prometheus/alert_rules.yml
+# Alert rules evaluated by Prometheus. Firing alerts are sent to Alertmanager, which emails them.
+
+groups:
+  - name: server-alerts
+    rules:
+      # RAM utilization above 65% for 5 minutes
+      - alert: HighMemoryUsage
+        expr: 100 * (1 - node_memory_MemAvailable_bytes{job="node"} / node_memory_MemTotal_bytes{job="node"}) > 65
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'High RAM usage on {{ $labels.instance }}'
+          description: 'RAM usage is {{ $value | printf "%.1f" }}% (threshold: 65%) for more than 5 minutes.'
+
+      # Disk usage above 85% on any real filesystem for 5 minutes
+      - alert: HighDiskUsage
+        expr: 100 * (1 - node_filesystem_avail_bytes{job="node",fstype!~"tmpfs|ramfs|squashfs|overlay|devtmpfs"} / node_filesystem_size_bytes{job="node",fstype!~"tmpfs|ramfs|squashfs|overlay|devtmpfs"}) > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'High disk usage on {{ $labels.mountpoint }} ({{ $labels.instance }})'
+          description: 'Disk {{ $labels.mountpoint }} is {{ $value | printf "%.1f" }}% full (threshold: 85%) for more than 5 minutes.'
